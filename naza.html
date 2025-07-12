@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Naza Danamah – Portfolio</title>
+  <style>
+    /* RESET & BASE */
+    *,
+    *::before,
+    *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      transition: background 0.4s, color 0.4s;
+      line-height: 1.6;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: var(--accent); text-decoration: none; transition: color .3s; }
+    a:hover { color: var(--accent-hover); }
+
+    /* THEME VARIABLES */
+    :root {
+      --bg: #fafafa; --bg-alt: #fff;
+      --text: #111; --text-light: #555;
+      --accent: #007aff; --accent-hover: #005ecb;
+      --shadow: rgba(0,0,0,0.1);
+    }
+    body.dark-mode {
+      --bg: #111; --bg-alt: #1e1e1e;
+      --text: #eee; --text-light: #aaa;
+      --accent: #0a84ff; --accent-hover: #0060df;
+      --shadow: rgba(0,0,0,0.7);
+    }
+
+    /* UTILITIES */
+    .container { width: 90%; max-width: 1100px; margin: 0 auto; }
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .6s ease-out, transform .6s ease-out; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    button, .btn {
+      display: inline-block; padding: .75rem 1.5rem; border: none; border-radius: 12px;
+      background: var(--accent); color: #fff; font-size: 1rem; cursor: pointer;
+      box-shadow: 0 4px 16px var(--shadow); transition: background .3s, transform .2s;
+    }
+    button:hover, .btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    section { padding: 100px 0; }
+    h1, h2, h3 { color: var(--text); margin-bottom: .5rem; }
+    p { color: var(--text-light); margin-bottom: 1rem; }
+
+    /* HERO */
+    #hero {
+      position: relative; min-height: 100vh; background: var(--bg-alt);
+      display: flex; align-items: center; text-align: center;
+      flex-direction: column; justify-content: center; overflow: hidden;
+    }
+    #hero::before {
+      content: ""; position: absolute; top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(135deg, var(--accent)20%, transparent 80%);
+      opacity: .15;
+    }
+    #hero .profile-pic {
+      width: 180px; height: 180px; border-radius: 50%;
+      overflow: hidden; margin-bottom: 1rem; box-shadow: 0 8px 24px var(--shadow);
+      background: var(--bg-alt);
+      transition: transform .3s;
+      position: relative; z-index: 1;
+    }
+    #hero .profile-pic img { width:100%; height:100%; object-fit: cover; }
+    #hero .profile-pic:hover { transform: scale(1.05); }
+    #hero h1 { font-size: 2.5rem; margin-top: .5rem; z-index: 1; }
+    #hero p.tagline { font-size: 1.25rem; margin: .5rem 0 1.5rem; z-index: 1; }
+    #hero .cta { display: flex; gap: 1rem; z-index: 1; }
+    #hero .cta a { text-decoration: none; }
+
+    /* DARK MODE TOGGLE */
+    .dark-toggle {
+      position: fixed; top: 20px; right: 20px; z-index: 1000;
+    }
+
+    /* ABOUT */
+    #about { background: var(--bg-alt); text-align: left; }
+    #about .about-content { display: flex; flex-wrap: wrap; align-items: center; gap: 2rem; }
+    #about .about-photo { flex: 1; max-width: 300px; border-radius: 16px; overflow: hidden; }
+    #about .about-photo img { width:100%; }
+    #about .about-text { flex: 2; }
+
+    /* WORK */
+    #work .grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+      gap: 1.5rem;
+    }
+    .project {
+      position: relative; border-radius: 16px; overflow: hidden;
+      background: var(--bg-alt); box-shadow: 0 4px 16px var(--shadow);
+      cursor: pointer; transition: transform .3s;
+    }
+    .project:hover { transform: translateY(-4px); }
+    .project img { width:100%; height:160px; object-fit: cover; }
+    .project .overlay {
+      position: absolute; top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,.6); color: #fff; opacity: 0;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 1rem; transition: opacity .3s;
+    }
+    .project:hover .overlay { opacity: 1; }
+
+    /* MODAL */
+    .modal {
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,.8); display: none; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .modal.open { display: flex; }
+    .modal-content {
+      background: var(--bg-alt); border-radius: 16px; width: 90%; max-width: 700px;
+      max-height: 90%; overflow-y: auto; position: relative; padding: 1.5rem;
+      box-shadow: 0 8px 24px var(--shadow);
+    }
+    .modal-content img { width:100%; border-radius: 8px; margin-bottom: 1rem; }
+    .modal-close {
+      position: absolute; top: 12px; right: 12px; background: transparent; border:none;
+      font-size: 1.5rem; color: var(--text-light); cursor: pointer;
+    }
+
+    /* SKILLS */
+    #skills .skill { display: flex; align-items: center; margin-bottom: 1rem; gap: 1rem; }
+    #skills .skill .label { width: 100px; }
+    #skills .skill .bar {
+      flex: 1; height: 12px; background: var(--bg-alt); border-radius: 6px; overflow: hidden;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    #skills .skill .bar-inner {
+      height: 100%; background: var(--accent); width: 0; border-radius: 6px;
+      transition: width .8s ease-out;
+    }
+
+    /* TESTIMONIALS */
+    #testimonials .quote {
+      background: var(--bg-alt); padding: 1.5rem; border-radius: 16px; box-shadow: 0 4px 16px var(--shadow);
+      margin-bottom: 1rem;
+    }
+    #testimonials .quote p { font-style: italic; }
+
+    /* CONTACT */
+    #contact form {
+      display: grid; gap: 1rem; max-width: 500px; margin: 0 auto;
+    }
+    #contact input, #contact textarea {
+      padding: .75rem; border: 1px solid var(--shadow); border-radius: 8px;
+      background: var(--bg); color: var(--text); transition: border-color .3s;
+    }
+    #contact input:focus, #contact textarea:focus { border-color: var(--accent); outline: none; }
+    #contact .social-links { display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; }
+    #contact .social-links a { font-size: 1.25rem; }
+
+    /* FLOATING MESSAGE BUTTON */
+    .message-btn {
+      position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center; padding: 2rem 0; background: var(--bg-alt);
+    }
+    footer .social { margin: 1rem 0; display: flex; gap: 1rem; justify-content: center; }
+    footer p { font-size: .9rem; color: var(--text-light); }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      #about .about-content { flex-direction: column; text-align: center; }
+      #about .about-text { order: 2; }
+      #about .about-photo { order: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- DARK MODE TOGGLE -->
+  <button class="dark-toggle btn" aria-label="Toggle Dark Mode">Toggle Mode</button>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="profile-pic"><img src="waya.PNG" alt="Naza Danamah"/></div>
+    <h1 class="fade-in">Naza Danamah</h1>
+    <p class="tagline fade-in">I design, develop, manage, and inspire digital success</p>
+    <div class="cta fade-in">
+      <a href="#contact" class="btn">Contact Me</a>
+      <a href="#work" class="btn">View My Work</a>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="fade-in">
+    <div class="container about-content">
+      <div class="about-photo"><img src="naya.PNG" alt="Naza Danamah Photo"/></div>
+      <div class="about-text">
+        <h2>About Me</h2>
+        <p>I'm Naza Danamah, a Certified Business Relationship Manager (BRM), PMP-equivalent certified Project Manager, and holder of a Higher National Diploma in Computer Science Technology. I'm highly creative, passionate about user-centered design, and have a proven track record delivering successful projects.</p>
+        <p>My skills span web design & development, graphics design, and technical writing. I weave strategy, aesthetics, and usability into every digital experience.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section id="work" class="fade-in">
+    <div class="container">
+      <h2>My Work</h2>
+      <div class="grid">
+        <!-- Repeat for each project -->
+         <a href="https://drive.google.com/drive/folders/1rDFc7uGX8FHsQ7Kge1awK6xX9m_10H1D?usp=sharing"> 
+        <div class="project" data-title="Project One" data-img="project.jpg" data-desc="Go through my cloud drive to see my works on project management." a href="#contact" class="btn">
+          <img src="PROJECT.JPG" alt="Project One"/>
+          <div class="overlay">
+                  <p><B>PROJECT MANAGEMENT</B></p></div>
+        </div>
+          </a>
+          <a href="https://drive.google.com/drive/folders/1sODYqGfeatdFQaXGvX0Fx_Il1D5QL1Da?usp=sharing">
+        <div a href="#" class="project" data-title="Project Two" data-img="tech.jpg" data-desc="Most of my technical documentations/writing are in my cloud drive.">
+          <img src="TECH.jpg" alt="Project Two"/>
+          <div class="overlay"><p><B>TECHNICAL WRITING</B></p></div>
+        </div></a>
+        <a href="https://drive.google.com/drive/folders/1pzSom5HLCLvHt5o8ODIKiff1Husgb0QN?usp=sharing">
+        <div class="project" data-title="Project Three" data-img="WEB.JPG" data-desc="The samples here are all done by me.">
+          <img src="WEB.jpg" alt="Project Three"/>
+          <div class="overlay"><p><B>WEB DEV</B></p></div>
+        </div>
+            </a>
+        <!-- Add more as needed -->
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" class="fade-in">
+    <div class="container">
+      <h2>Skills</h2>
+      <div class="skill"><div class="label">HTML</div><div class="bar"><div class="bar-inner" data-level="90%"></div></div></div>
+      <div class="skill"><div class="label">CSS</div><div class="bar"><div class="bar-inner" data-level="85%"></div></div></div>
+      <div class="skill"><div class="label">JavaScript</div><div class="bar"><div class="bar-inner" data-level="75%"></div></div></div>
+      <div class="skill"><div class="label">Figma</div><div class="bar"><div class="bar-inner" data-level="80%"></div></div></div>
+      <div class="skill"><div class="label">Photoshop</div><div class="bar"><div class="bar-inner" data-level="70%"></div></div></div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials" class="fade-in">
+    <div class="container">
+      <h2>Testimonials</h2>
+      <div class="quote">
+        <p>"Naza led our project with incredible clarity and creativity on time and above expectations."</p>
+        <p>— Alex Njoku, Client</p>
+      </div>
+      <div class="quote">
+        <p>"His user-centered approach transformed our app. The team loved his communication and design vision."</p>
+        <p>— Maria Adesola, Product Owner</p>
+      </div>
+         <div class="quote">
+        <p>"He is a good listener thats the most important thing for me and my team, also he makes client's statisfication his priority."</p>
+        <p>— Jacobs Dele, Client</p>
+      </div>
+         <div class="quote">
+        <p>"Always patience to learn about what we want and make the necesssary corrections, it was a tough big project but he made it a smooth one for us."</p>
+        <p>— Gladys Danjuma, CTO</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="fade-in">
+    <div class="container">
+      <h2>Contact Me</h2>
+      <form onsubmit="event.preventDefault(); alert('Thank you! I will be in touch soon.');">
+        <input type="text" name="name" placeholder="Your Name" required/>
+        <input type="email" name="email" placeholder="Your Email" required/>
+        <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+        <button type="submit" class="btn">Send Message</button>
+      </form>
+      <div class="social-links">
+        <a href="https://linkedin.com/in/nazadanamah" target="_blank">LinkedIn</a>
+        <a href="https://instagram.com/nazaishim" target="_blank">Instagram</a>
+        <a href="https://twitter.com/nazaishim" target="_blank">Twitter</a>
+        <a href="https://wa.me/2347055339470" target="_blank">WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="fade-in">
+    <div class="container">
+      <div class="social">
+        <a href="https://linkedin.com/in/nazadanamah" target="_blank">LinkedIn</a>
+        <a href="https://instagram.com/nazaishim" target="_blank">Instagram</a>
+        <a href="https://twitter.com/nazaishim" target="_blank">Twitter</a>
+      </div>
+      <p>© 2025 Naza Danamah. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- PROJECT MODAL -->
+  <div class="modal" id="project-modal">
+    <div class="modal-content">
+      <button class="modal-close" aria-label="Close">&times;</button>
+      <h3 id="modal-title"></h3>
+      <img id="modal-img" src="" alt="Project"/>
+      <p id="modal-desc"></p>
+    </div>
+  </div>
+
+  <!-- FLOATING MESSAGE BUTTON -->
+  <button class="message-btn btn" aria-label="Quick Contact">Message Me</button>
+
+  <script>
+    // DARK MODE
+    const toggle = document.querySelector('.dark-toggle');
+    toggle.addEventListener('click', () => document.body.classList.toggle('dark-mode'));
+
+    // FADE-IN ON SCROLL
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // SKILL BARS
+    document.querySelectorAll('.bar-inner').forEach(bar => {
+      const lvl = bar.dataset.level;
+      setTimeout(() => bar.style.width = lvl, 500);
+    });
+
+    // PROJECT MODAL
+    const modal = document.getElementById('project-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalImg = document.getElementById('modal-img');
+    const modalDesc = document.getElementById('modal-desc');
+    document.querySelectorAll('.project').forEach(project => {
+      project.addEventListener('click', () => {
+        modalTitle.textContent = project.dataset.title;
+        modalImg.src = project.dataset.img;
+        modalDesc.textContent = project.dataset.desc;
+        modal.classList.add('open');
+      });
+    });
+    document.querySelector('.modal-close').addEventListener('click', () => modal.classList.remove('open'));
+    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+
+    // FLOATING MESSAGE BUTTON
+    document.querySelector('.message-btn').addEventListener('click', () => {
+      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // PARALLAX HERO IMAGE
+    const heroPic = document.querySelector('#hero .profile-pic');
+    window.addEventListener('scroll', () => {
+      const sc = window.scrollY * 0.3;
+      heroPic.style.transform = `translateY(${sc}px) scale(${1 + sc/1000})`;
+    });
+  </script>
+</body>
+</html>
